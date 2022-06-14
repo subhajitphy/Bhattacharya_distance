@@ -33,18 +33,18 @@ def bhatt_dis_gen(X1,Y1,X2,Y2,nbin=None):
     bhatt_coeff=simps(simps(np.sqrt(hist1*hist2),arrx),arry)
     return -np.log(bhatt_coeff)  
 
-
-# def bhatt_dis_gen(X1,Y1,X2,Y2,nbin=None):
-#     if (nbin==None):
-#         nbin=100
-#     ret1 = stats.binned_statistic_2d(X1,Y1, None, 'count', bins=nbin,range=[RANGE(X1,X2),RANGE(Y1,Y2)])
-#     ret2 = stats.binned_statistic_2d(X2,Y2, None, 'count', bins=nbin,range=[RANGE(X1,X2),RANGE(Y1,Y2)])
-#     hist1=ret1.statistic/nor(ret1.statistic,ret1.x_edge,ret1.y_edge)
-#     hist2=ret2.statistic/nor(ret2.statistic,ret2.x_edge,ret2.y_edge)
-#     deltax=ret1.x_edge[1]-ret1.x_edge[0]
-#     deltay=ret1.y_edge[1]-ret1.y_edge[0]
-#     bhatt_coeff=np.sum(np.sqrt(hist1*hist2)*deltax*deltay)
-#     return -np.log(bhatt_coeff)  
+def bhatt_dis_gen_v2(X1,Y1,X2,Y2):
+    cov1=np.cov(np.array([X1,Y1]))
+    cov2=np.cov(np.array([X2,Y2]))
+    mean1=np.array([np.mean(X1),np.mean(Y1)])
+    mean2=np.array([np.mean(X2),np.mean(Y2)])
+    mean=mean1-mean2
+    cov=(cov1+cov2)/2
+    icov=inv(cov)
+    p1=np.dot(icov,mean)
+    p2=np.dot(mean,p1)
+    w=(1/8*p2+1/2*np.log(det(cov)/np.sqrt(det(cov1)*det(cov2))))
+    return w
 
 
 def maha_dis(X1,Y1,X2,Y2):
@@ -63,6 +63,8 @@ def maha_dis(X1,Y1,X2,Y2):
 ###########################################################################################################################################
 #                                       Analytical Formulae
 ###########################################################################################################################################
+
+
 
 
 def bhatt_dis(mean1,mean2,cov1,cov2):
